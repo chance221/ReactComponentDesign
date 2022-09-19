@@ -31,7 +31,8 @@ function useRequestDelay(delayTime = 1000, initialData=[]){
     delayFunc();
   }, []);
 
-  function updateRecord(recordUpdated) {
+  function updateRecord(recordUpdated, doneCallback) {
+    const originalRecords = [...data]
     //this is creating a new array
     //map through the old array and add them to the new array 
     //if you locate the record that needs updating 
@@ -42,10 +43,19 @@ function useRequestDelay(delayTime = 1000, initialData=[]){
 
     async function delayFunction() {
       try {
-        await delay(2000);
         setData(newRecords);
+        await delay(2000);
+        
+        if(doneCallback){
+          doneCallback();
+        }
+
       } catch (error) {
         console.log("error thrown inside delay function", error)
+        if (doneCallback){
+          doneCallback();
+        }
+        setData(originalRecords);
       }      
     }
     delayFunction();    
